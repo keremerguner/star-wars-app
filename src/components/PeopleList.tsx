@@ -1,9 +1,27 @@
 import React, { useState, useMemo } from "react";
-import { useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import { GET_PEOPLE } from "../queries/queries";
 import { exportToExcel } from "../utils/excelExport";
 
 const PeopleList: React.FC = () => {
+  const client = useApolloClient();
+  // Cache'deki veriyi kontrol etme
+  const checkCache = () => {
+    try {
+      const cachedData = client.cache.readQuery({
+        query: GET_PEOPLE,
+        variables: { first: 82 },
+      });
+      if (cachedData) {
+        console.log("Cache'deki veri:", cachedData);
+      } else {
+        console.log("Cache'de veri yok.");
+      }
+    } catch (error) {
+      console.log("Cache'den veri okunamadı:", error);
+    }
+  };
+
   const [genderFilter, setGenderFilter] = useState<string>("all");
   const [eyeColorFilter, setEyeColorFilter] = useState<string>("all");
   const [page, setPage] = useState<number>(1);
@@ -16,6 +34,7 @@ const PeopleList: React.FC = () => {
   const peopleData = data?.allPeople?.people || [];
 
   const filteredPeople = useMemo(() => {
+    //console.log("peopleData", peopleData);
     return peopleData.filter((person: any) => {
       const genderMatch =
         genderFilter === "all" || person.gender === genderFilter;
@@ -91,6 +110,7 @@ const PeopleList: React.FC = () => {
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={20}>20</option>
+              <option value={50}>50</option>
             </select>
           </div>
         </div>
@@ -161,6 +181,9 @@ const PeopleList: React.FC = () => {
         >
           Export to Excel
         </button>
+      </div>
+      <div>
+        <button onClick={checkCache}>Cache'i Kontrol Et</button>
       </div>
     </div>
   );
