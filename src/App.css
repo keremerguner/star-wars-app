@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+@media (max-width: 768px) {
+  .App {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .FilterComponent {
+    display: flex;
+    flex-direction: column;
+  }
+}
